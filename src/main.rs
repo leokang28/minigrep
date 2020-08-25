@@ -1,35 +1,20 @@
 use std::env;
-use std::fs;
+use std::process;
 
-struct Config {
-    query: String,
-    filename: String,
-}
-
-impl Config {
-    fn new(args: &Vec<String>) -> Config {
-        let query = args[1].clone();
-        let filename = args[2].clone();
-        Config { query, filename }
-    }
-}
+use minigrep::Config;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    // let (query, filename) = parse_config(&args);
-    // let config = Config::new(&args);
-    // println!("query: {}", config.query);
-    // println!("filename: {}", config.filename);
 
-    // let contents = fs::read_to_string(config.filename).expect("read file failed");
+    let config = Config::new(&args).unwrap_or_else(|err| {
+        eprintln!("参数解析失败: {}", err);
+        process::exit(1);
+    });
 
-    // println!("text: \n{}", contents);
+    if let Err(e) = minigrep::run(config) {
+        eprintln!("文件读取失败: {}", e);
+        process::exit(1);
+    }
 
-    let str = String::from("123123");
-
-    pt(&str);
 }
 
-fn pt(str: &String) {
-    println!("{}", str);
-}
